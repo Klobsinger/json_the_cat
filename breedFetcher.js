@@ -1,24 +1,23 @@
-const { argv } = require('process');
 const request = require('request');
 
-const breedFetcher = function() {
-  const breed = 'https://api.thecatapi.com/v1/breeds/search?q=' + argv[2].toLowerCase();
+const fetchBreedDescription = function(breedName, callback) {
+  const breed = 'https://api.thecatapi.com/v1/breeds/search?q=' + breedName.toLowerCase();
 
   request(breed, (error, response, body) => {
     if (error) {
-      console.error(`error kitty machine broke ${error}`);
+      callback(error, null);
       return;
     }
 
     const data = JSON.parse(body);
 
     if (data.length === 0) {
-      console.log(`I've never heard of a kitty like that: ${argv[2]}`);
+      callback(`I've never heard of a kitty like that: ${breedName}`, null);
       return;
     }
 
-    console.log(data[0].description);
+    callback(null, data[0].description);
   });
 };
 
-breedFetcher();
+module.exports = fetchBreedDescription;
